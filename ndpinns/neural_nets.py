@@ -12,6 +12,7 @@ Description:
 from dataclasses import dataclass
 import jax.numpy as jnp
 import jax.random as jr
+import json
 
 def generate_forward(activation):
 
@@ -93,3 +94,16 @@ def initialize_parameters(key, parameter_geometry, w0=1.):
 
     return ((w,b),) + initialize_parameters(key, parameter_geometry, w0)
 
+def params_to_json(filename, params):
+    list_params = [[param[0].tolist(), param[1].tolist()] for param in params]
+    with open(filename, "w") as f:
+        json.dump(list_params, f, indent=4)
+
+def json_to_params(filename):
+    with open(filename, "r") as f:
+        list_params = json.load(f)
+    params = tuple(
+                (jnp.array(param[0]), jnp.array(param[1]))
+                for param in list_params
+            )
+    return params
